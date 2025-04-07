@@ -15,7 +15,7 @@ def generate_signals(n_samples=1000, length=64, frequency_range=(1, 10)):
         # Random continuous amplitude and frequency
         amp = np.random.uniform(0.5, 2.0)
         freq = np.random.uniform(frequency_range[0], frequency_range[1])
-        phase = 0  # fixed for orthogonality
+        phase = np.random.uniform(0, 2 * np.pi)  # random phase
         
         # Generate signal
         t = np.linspace(0, 1, length)
@@ -67,8 +67,8 @@ def vae_loss(x_hat, x, mu, logvar, kl_weight):
     recon_loss = nn.functional.mse_loss(x_hat, x, reduction='mean')
     # KL divergence between posterior and N(0,1)
     # gamma = 0.05
-    gamma = 0.0001
-    kl_div = -gamma * torch.sum(1 + logvar - mu.pow(2) - logvar.exp()) / x.size(0)
+    # gamma = 0.01
+    kl_div = - torch.sum(1 + logvar - mu.pow(2) - logvar.exp()) / x.size(0)
     return recon_loss + kl_weight * kl_div, recon_loss, kl_div
 
 
@@ -76,9 +76,12 @@ def train_vae(model, x, n_epochs=2000, lr=1e-2):
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     
     # KL weight will grow from 0.1 to 1.0 over first half of training
-    def get_kl_weight(epoch, start=0.01, end=1.0, steps=n_epochs // 2):
+    def get_kl_weight(epoch, start=0.000001, end=0.1, steps=n_epochs // 2):
         if epoch < steps:
-            return start + (end - start) * (epoch / steps)
+            # Use a smoother sigmoid-like curve for the transition
+            progress = epoch / steps
+            weight = start + (end - start) * (3 * progress ** 2 - 2 * progress ** 3)
+            return weight
         return end
 
     for epoch in range(n_epochs):
@@ -96,7 +99,7 @@ def train_vae(model, x, n_epochs=2000, lr=1e-2):
 X, amplitude_values, frequency_values = generate_signals()
 
 input_dim = 64
-n_samples=1000
+n_samples=10000
 frequency_range=(1, 10)
 bottleneck_dim = 2
 hidden_dim = 30
@@ -107,12 +110,11 @@ model = VAE(input_dim=input_dim, latent_dim=bottleneck_dim)
 # train_model(model, x)
 train_vae(model, x, n_epochs=20000, lr=1e-3)
 
+# %%
 model.eval()
 with torch.no_grad():
     _, mu, _ = model(x)
 z = mu.numpy()
-
-# %%
 # Create figure with three subplots
 fig, (ax2, ax3) = plt.subplots(1, 2, figsize=(20, 6))
 
