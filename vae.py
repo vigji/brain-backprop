@@ -15,7 +15,7 @@ def generate_signals(n_samples=1000, length=64, frequency_range=(1, 10)):
         # Random continuous amplitude and frequency
         amp = np.random.uniform(0.5, 2.0)
         freq = np.random.uniform(frequency_range[0], frequency_range[1])
-        phase = np.random.uniform(0, 2 * np.pi)  # random phase
+        phase = 0  # fixed for orthogonality
         
         # Generate signal
         t = np.linspace(0, 1, length)
@@ -76,7 +76,7 @@ def train_vae(model, x, n_epochs=2000, lr=1e-2):
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     
     # KL weight will grow from 0.1 to 1.0 over first half of training
-    def get_kl_weight(epoch, start=0.000001, end=0.1, steps=n_epochs // 2):
+    def get_kl_weight(epoch, start=0.000001, end=0., steps=n_epochs // 2):
         if epoch < steps:
             # Use a smoother sigmoid-like curve for the transition
             progress = epoch / steps
