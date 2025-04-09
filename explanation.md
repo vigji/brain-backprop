@@ -78,9 +78,9 @@ Because these algorithms rely on differences between “what is” and “what s
 
 The local learning rule then uses:
 
-\[
+$$
 (\text{Local mismatch}) = (\text{Actual activation}) \;-\; (\text{Desired activation})
-\]
+$$
 
 or some variant. And that mismatch *implicitly* encodes the gradient from backprop—*provided* those feedback or generative mappings are well learned. 
 
@@ -92,18 +92,18 @@ Hence, **the better the feedback or generative model, the closer you approximate
 
 In a more **mathematical** sense (still lightly):
 
-- **Backprop** says: \( \Delta w \sim \frac{\partial \mathcal{L}}{\partial w} \).  
-- **Target-based** methods say: \( \Delta w \sim (h_i^* - h_i) \times \frac{\partial h_i}{\partial w} \).
+- **Backprop** says: $\Delta w \sim \frac{\partial \mathcal{L}}{\partial w}$.  
+- **Target-based** methods say: $\Delta w \sim (h_i^* - h_i) \times \frac{\partial h_i}{\partial w}$.
 
-If \(h_i^*\) is chosen so that \(h_i^* - h_i\) *aligns* with the partial derivative \(\frac{\partial \mathcal{L}}{\partial h_i}\), then you effectively get the same updates as backprop.  
+If $h_i^*$ is chosen so that $h_i^* - h_i$ *aligns* with the partial derivative $\frac{\partial \mathcal{L}}{\partial h_i}$, then you effectively get the same updates as backprop.  
 
 In DTP, for instance, 
-\[
+$$
 h_i^* - h_i 
 \approx 
 - \alpha \frac{\partial \mathcal{L}}{\partial h_i}
-\]
-when the inverses are good enough. This means the difference \((h_i^* - h_i)\) becomes analogous to the backprop gradient signal for \(h_i\). 
+$$
+when the inverses are good enough. This means the difference $(h_i^* - h_i)$ becomes analogous to the backprop gradient signal for $h_i$. 
 
 **Contrastive Hebbian** does something similar with “free phase” vs. “clamped phase” activities, and **Helmholtz Machines** with “wake” vs. “sleep” states. In each case, a difference of states approximates the gradient direction.
 
