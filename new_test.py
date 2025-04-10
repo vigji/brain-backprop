@@ -1,3 +1,4 @@
+# %%
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -254,3 +255,5 @@ plt.ylabel('L2 Norm of Middle Neuron Incoming Weights')
 plt.title('Evolution of h2_1 Incoming Weights')
 plt.legend()
 plt.show()
+
+# %%
